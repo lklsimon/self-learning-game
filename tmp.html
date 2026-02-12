@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Learning Game</title>
+    <!-- 添加童趣字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive, Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #ff6b6b;
+            text-shadow: 3px 3px 0 #ffd166;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .clock-container {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            position: relative;
+            border: 15px solid #ff9a76;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fff5e6, #ffe8cc);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .hand {
+            position: absolute;
+            transform-origin: bottom center;
+            left: 50%;
+            bottom: 50%;
+            background-color: #333;
+        }
+        .hour-hand {
+            width: 8px;
+            height: 80px;
+            margin-left: -4px;
+            border-radius: 4px;
+            background-color: #ff6b6b;
+        }
+        .minute-hand {
+            width: 6px;
+            height: 120px;
+            margin-left: -3px;
+            border-radius: 3px;
+            background-color: #4ecdc4;
+        }
+        .center-circle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ffd166;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            z-index: 10;
+            border: 3px solid #ff9a76;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        .option {
+            padding: 15px 20px;
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            color: #333;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            flex: 1 0 40%;
+            min-width: 200px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #6bc5a3;
+        }
+        .option:hover:not(:disabled) {
+            background: linear-gradient(145deg, #8dd7b9, #7bc9a9);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #6bc5a3;
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .option.incorrect {
+            background: linear-gradient(145deg, #ff8ba0, #ff6b6b);
+            box-shadow: 0 4px 0 #e05555;
+        }
+        .option.correct-answer {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            box-shadow: 0 0 15px #4ecdc4;
+            animation: pulse 1s infinite;
+        }
+        .feedback {
+            font-size: 1.8rem;
+            margin: 20px;
+            min-height: 40px;
+            font-weight: bold;
+        }
+        .correct {
+            color: #4ecdc4;
+            text-shadow: 1px 1px 0 #2a9d8f;
+        }
+        .incorrect {
+            color: #ff6b6b;
+            text-shadow: 1px 1px 0 #e63946;
+        }
+        .format-toggle {
+            margin: 20px;
+        }
+        .clock-number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .clock-number span {
+            position: absolute;
+            display: block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            color: #333;
+            text-shadow: 1px 1px 0 #ffd166;
+        }
+        .score-display {
+            font-size: 1.5rem;
+            margin: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #ffd166, #ffc145);
+            border-radius: 20px;
+            display: inline-block;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #e0b14d;
+        }
+        .progress-display {
+            font-size: 1.2rem;
+            margin: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            border-radius: 20px;
+            display: inline-block;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #6bc5a3;
+        }
+        .review-container {
+            display: none;
+            margin: 20px auto;
+            max-width: 700px;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .review-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .review-btn {
+            padding: 15px;
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 0 #6bc5a3;
+        }
+        .review-btn:hover {
+            background: linear-gradient(145deg, #8dd7b9, #7bc9a9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #6bc5a3;
+        }
+        .review-btn.correct {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            box-shadow: 0 3px 0 #2a9d8f;
+        }
+        .review-btn.correct:hover {
+            background: linear-gradient(145deg, #36b7ae, #2a9d8f);
+            box-shadow: 0 5px 0 #2a9d8f;
+        }
+        .review-btn.incorrect {
+            background: linear-gradient(145deg, #ff8ba0, #ff6b6b);
+            box-shadow: 0 3px 0 #e05555;
+        }
+        .review-btn.incorrect:hover {
+            background: linear-gradient(145deg, #ff6b6b, #e05555);
+            box-shadow: 0 5px 0 #e05555;
+        }
+        .question-detail {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(145deg, #fff9e6, #fff5cc);
+            border-radius: 15px;
+            border: 3px solid #ffd166;
+        }
+        .question-detail.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .question-detail-clock {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border: 12px solid #ff9a76;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #fff5e6, #ffe8cc);
+            position: relative;
+        }
+        .question-detail-clock .hand {
+            position: absolute;
+            transform-origin: bottom center;
+            left: 50%;
+            bottom: 50%;
+        }
+        .question-detail-clock .hour-hand {
+            width: 8px;
+            height: 70px;
+            margin-left: -4px;
+            background-color: #ff6b6b;
+        }
+        .question-detail-clock .minute-hand {
+            width: 6px;
+            height: 100px;
+            margin-left: -3px;
+            background-color: #4ecdc4;
+        }
+        .question-detail-clock .center-circle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: #ffd166;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+        }
+        .question-detail-clock .clock-number {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .question-detail-clock .clock-number span {
+            position: absolute;
+            display: block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            color: #333;
+            text-shadow: 1px 1px 0 #ffd166;
+        }
+        .back-to-buttons-btn {
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 0 #e07a4f;
+        }
+        
+        .back-to-buttons-btn:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #e07a4f;
+        }
+        #playAgainBtn {
+            padding: 15px 30px;
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #2a9d8f;
+            margin: 20px;
+        }
+        
+        #playAgainBtn:hover {
+            background: linear-gradient(145deg, #36b7ae, #2a9d8f);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #2a9d8f;
+        }
+        
+        #playAgainBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2a9d8f;
+        }
+        .timer-display {
+            display: none;
+        }
+        
+        #toggleFormat {
+            padding: 12px 25px;
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #e07a4f;
+        }
+        
+        #toggleFormat:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #e07a4f;
+        }
+        
+        #toggleFormat:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e07a4f;
+        }
+        
+        @keyframes pulse {
+            0% { 
+                box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
+                transform: translateY(-1px);
+            }
+            50% { 
+                box-shadow: 0 0 20px #4ecdc4, 0 6px 0 #36b7ae;
+                transform: translateY(-3px);
+            }
+            100% { 
+                box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
+                transform: translateY(-1px);
+            }
+        }
+        
+        /* 添加一些装饰元素 */
+        .decoration {
+            position: absolute;
+            z-index: -1;
+        }
+        
+        .sun {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #ffd166, #ffb347);
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            box-shadow: 0 0 20px rgba(255, 209, 102, 0.5);
+        }
+        
+        .cloud {
+            width: 60px;
+            height: 30px;
+            background: white;
+            border-radius: 15px;
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .cloud:before, .cloud:after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .cloud:before {
+            width: 25px;
+            height: 25px;
+            top: -10px;
+            left: 10px;
+        }
+        
+        .cloud:after {
+            width: 20px;
+            height: 20px;
+            top: -8px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 装饰元素 -->
+    <div class="sun"></div>
+    <div class="cloud"></div>
+    
+    <h1>What time is it now?</h1>
+    <div class="score-display">Score: <span id="score">0</span></div>
+    <div class="progress-display">Question: <span id="currentQuestion">1</span>/10</div>
+    <div class="timer-display">Next question in: <span id="timer">2</span>s</div>
+    <div class="format-toggle">
+        <button id="toggleFormat">Switch to Digital/Text Format</button>
+    </div>
+    <div class="clock-container" id="clock">
+        <div class="clock-number" id="clockNumbers"></div>
+        <div class="hand hour-hand" id="hourHand"></div>
+        <div class="hand minute-hand" id="minuteHand"></div>
+        <div class="center-circle"></div>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    
+    <!-- Review Section -->
+    <div class="review-container" id="reviewContainer">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px;">📊 Review Your Answers</h2>
+        <div id="reviewSummary"></div>
+        <div id="reviewButtons" class="review-buttons"></div>
+        <div id="questionDetail" class="question-detail"></div>
+        <div id="playAgainSection">
+            <button id="playAgainBtn">🎮 Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let currentHour = 0;
+        let currentMinute = 0;
+        let correctAnswer = '';
+        let isDigitalFormat = Math.random() < 0.5;
+        let score = 0;
+        let timer = null;
+        let timeLeft = 2;
+        let questionHistory = [];
+        let currentQuestionNum = 1;
+        const QUESTIONS_PER_ROUND = 10;
+        
+        // DOM elements
+        const hourHand = document.getElementById('hourHand');
+        const minuteHand = document.getElementById('minuteHand');
+        const optionsContainer = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const toggleFormatBtn = document.getElementById('toggleFormat');
+        const clockNumbers = document.getElementById('clockNumbers');
+        const scoreElement = document.getElementById('score');
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        const reviewContainer = document.getElementById('reviewContainer');
+        const reviewSummary = document.getElementById('reviewSummary');
+        const reviewButtons = document.getElementById('reviewButtons');
+        const questionDetail = document.getElementById('questionDetail');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const playAgainSection = document.getElementById('playAgainSection');
+        const clockContainer = document.getElementById('clock');
+        const formatToggle = document.querySelector('.format-toggle');
+        
+        // Initialize clock numbers
+        createClockNumbers();
+        
+        // Initialize game
+        startNewRound();
+        
+        // Event listeners
+        toggleFormatBtn.addEventListener('click', toggleFormat);
+        playAgainBtn.addEventListener('click', startNewRound);
+        
+        function startNewRound() {
+            // Reset game state
+            score = 0;
+            currentQuestionNum = 1;
+            questionHistory = [];
+            isDigitalFormat = Math.random() < 0.5;
+            
+            // Update displays
+            scoreElement.textContent = score;
+            currentQuestionElement.textContent = currentQuestionNum;
+            
+            // Show game elements, hide review
+            clockContainer.style.display = 'block';
+            formatToggle.style.display = 'block';
+            optionsContainer.style.display = 'flex';
+            reviewContainer.style.display = 'none';
+            playAgainSection.style.display = 'block';
+            
+            // Start first question
+            generateNewQuestion();
+        }
+        
+        function toggleFormat() {
+            isDigitalFormat = !isDigitalFormat;
+            generateNewQuestion();
+        }
+        
+        function createClockNumbers() {
+            const radius = 130;
+            const centerX = 150;
+            const centerY = 150;
+            
+            for (let i = 1; i <= 12; i++) {
+                const angle = (i - 3) * 30 * Math.PI / 180;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                
+                const numberSpan = document.createElement('span');
+                numberSpan.textContent = i;
+                numberSpan.style.left = `${x - 15}px`;
+                numberSpan.style.top = `${y - 15}px`;
+                numberSpan.style.fontSize = '1.3rem';
+                clockNumbers.appendChild(numberSpan);
+            }
+        }
+        
+        function generateNewQuestion() {
+            // Check if round is complete
+            if (currentQuestionNum > QUESTIONS_PER_ROUND) {
+                showReview();
+                return;
+            }
+            
+            // Update progress display
+            currentQuestionElement.textContent = currentQuestionNum;
+            
+            // Reset timer
+            timeLeft = 2;
+            
+            // Clear any existing timers
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+            
+            // Reset feedback
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+            
+            // Remove all button classes
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('correct-answer', 'incorrect');
+                if (option.disabled) {
+                    option.disabled = false;
+                    option.style.background = 'linear-gradient(145deg, #a8e6cf, #8dd7b9)';
+                    option.style.boxShadow = '0 4px 0 #6bc5a3';
+                }
+            });
+            
+            // Generate random time
+            currentHour = Math.floor(Math.random() * 12) + 1;
+            currentMinute = Math.floor(Math.random() * 12) * 5;
+            
+            // Update clock display
+            updateClock();
+            
+            // Generate options
+            generateOptions();
+        }
+        
+        function updateClock() {
+            const hourAngle = (currentHour % 12) * 30 + (currentMinute / 60) * 30;
+            const minuteAngle = currentMinute * 6;
+            
+            hourHand.style.transform = `rotate(${hourAngle}deg)`;
+            minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+        }
+        
+        function generateOptions() {
+            optionsContainer.innerHTML = '';
+            
+            correctAnswer = isDigitalFormat 
+                ? `${currentHour}:${currentMinute.toString().padStart(2, '0')}`
+                : generateTextTime(currentHour, currentMinute);
+            
+            const options = [correctAnswer];
+            
+            while (options.length < 4) {
+                let incorrectHour = currentHour;
+                let incorrectMinute = currentMinute;
+                
+                if (Math.random() < 0.5) {
+                    incorrectHour += Math.random() < 0.5 ? 1 : -1;
+                    if (incorrectHour > 12) incorrectHour = 1;
+                    if (incorrectHour < 1) incorrectHour = 12;
+                } else {
+                    const minuteChange = Math.random() < 0.5 ? 5 : 10;
+                    incorrectMinute += Math.random() < 0.5 ? minuteChange : -minuteChange;
+                    if (incorrectMinute >= 60) incorrectMinute -= 60;
+                    if (incorrectMinute < 0) incorrectMinute += 60;
+                }
+                
+                const incorrectAnswer = isDigitalFormat 
+                    ? `${incorrectHour}:${incorrectMinute.toString().padStart(2, '0')}`
+                    : generateTextTime(incorrectHour, incorrectMinute);
+                
+                if (!options.includes(incorrectAnswer)) {
+                    options.push(incorrectAnswer);
+                }
+            }
+            
+            shuffleArray(options);
+            
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.setAttribute('data-answer', option);
+                button.addEventListener('click', () => checkAnswer(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function generateTextTime(hour, minute) {
+            if (minute === 0) {
+                return `${hour} o'clock`;
+            } else if (minute === 15) {
+                return `15 minutes past ${hour}`;
+            } else if (minute === 30) {
+                return `half past ${hour}`;
+            } else if (minute === 45) {
+                return `15 minutes to ${hour === 12 ? 1 : hour + 1}`;
+            } else if (minute < 30) {
+                return `${minute} minute${minute !== 1 ? 's' : ''} past ${hour}`;
+            } else {
+                return `${60 - minute} minute${(60 - minute) !== 1 ? 's' : ''} to ${hour === 12 ? 1 : hour + 1}`;
+            }
+        }
+        
+        function checkAnswer(selectedAnswer) {
+            // Disable all options to prevent multiple clicks
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.disabled = true;
+            });
+            
+            // Record question history
+            const isCorrect = selectedAnswer === correctAnswer;
+            questionHistory.push({
+                hour: currentHour,
+                minute: currentMinute,
+                correctAnswer: correctAnswer,
+                selectedAnswer: selectedAnswer,
+                isCorrect: isCorrect,
+                format: isDigitalFormat ? 'digital' : 'text'
+            });
+            
+            if (isCorrect) {
+                feedbackElement.textContent = 'Correct! Well done! ✨';
+                feedbackElement.className = 'feedback correct';
+                score++;
+                scoreElement.textContent = score;
+                
+                // Highlight the correct answer
+                options.forEach(option => {
+                    if (option.getAttribute('data-answer') === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    }
+                });
+            } else {
+                feedbackElement.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedbackElement.className = 'feedback incorrect';
+                
+                // Highlight the correct answer and mark incorrect answer
+                options.forEach(option => {
+                    if (option.getAttribute('data-answer') === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    } else if (option.getAttribute('data-answer') === selectedAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                });
+            }
+            
+            // Move to next question after 2 seconds
+            timer = setTimeout(() => {
+                currentQuestionNum++;
+                generateNewQuestion();
+            }, 2000);
+        }
+        
+        function showReview() {
+            // Hide game elements
+            clockContainer.style.display = 'none';
+            formatToggle.style.display = 'none';
+            optionsContainer.style.display = 'none';
+            feedbackElement.textContent = '';
+            
+            // Show review container
+            reviewContainer.style.display = 'block';
+            playAgainSection.style.display = 'none';
+            questionDetail.classList.remove('show');
+            
+            // Clear previous review
+            reviewSummary.innerHTML = '';
+            reviewButtons.innerHTML = '';
+            
+            // Calculate summary
+            const correctCount = questionHistory.filter(q => q.isCorrect).length;
+            const summaryHtml = `
+                <div style="text-align: center; padding: 20px; background: linear-gradient(145deg, #e8f8f7, #d4f1f0); border-radius: 15px; margin-bottom: 20px;">
+                    <h3 style="color: #2a9d8f; margin: 10px 0;">🎉 Round Complete!</h3>
+                    <p style="font-size: 1.3rem; margin: 10px 0;">
+                        Score: <strong>${correctCount}</strong> / ${QUESTIONS_PER_ROUND}
+                    </p>
+                    <p style="color: #666;">
+                        ${correctCount === QUESTIONS_PER_ROUND ? 'Perfect score! 🌟' : 
+                          correctCount >= 7 ? 'Great job! 👍' : 
+                          correctCount >= 5 ? 'Good effort! Keep practicing! 💪' : 
+                          'Keep trying! You\'ll get better! 📚'}
+                    </p>
+                    <p style="font-size: 1rem; color: #999; margin-top: 10px;">Click a number to review that question</p>
+                </div>
+            `;
+            reviewSummary.innerHTML = summaryHtml;
+            
+            // Generate review buttons
+            questionHistory.forEach((question, index) => {
+                const button = document.createElement('button');
+                button.className = `review-btn ${question.isCorrect ? 'correct' : 'incorrect'}`;
+                button.textContent = index + 1;
+                button.title = question.isCorrect ? 'Correct' : 'Incorrect';
+                button.addEventListener('click', () => showQuestionDetail(index));
+                reviewButtons.appendChild(button);
+            });
+            
+            // Scroll to review section
+            reviewContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showQuestionDetail(index) {
+            const question = questionHistory[index];
+            
+            // Hide buttons, show detail
+            reviewButtons.style.display = 'none';
+            playAgainSection.style.display = 'none';
+            questionDetail.classList.add('show');
+            
+            // Calculate clock angles
+            const hourAngle = (question.hour % 12) * 30 + (question.minute / 60) * 30;
+            const minuteAngle = question.minute * 6;
+            
+            // Generate the correct options for this question
+            const correctAnswer = question.correctAnswer;
+            const selectedAnswer = question.selectedAnswer;
+            
+            // Generate options display
+            let optionsHtml = '<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0;">';
+            const allOptions = [correctAnswer];
+            
+            // Re-create the incorrect options that were shown
+            while (allOptions.length < 4) {
+                let incorrectHour = question.hour;
+                let incorrectMinute = question.minute;
+                
+                if (Math.random() < 0.5) {
+                    incorrectHour += Math.random() < 0.5 ? 1 : -1;
+                    if (incorrectHour > 12) incorrectHour = 1;
+                    if (incorrectHour < 1) incorrectHour = 12;
+                } else {
+                    const minuteChange = Math.random() < 0.5 ? 5 : 10;
+                    incorrectMinute += Math.random() < 0.5 ? minuteChange : -minuteChange;
+                    if (incorrectMinute >= 60) incorrectMinute -= 60;
+                    if (incorrectMinute < 0) incorrectMinute += 60;
+                }
+                
+                let incorrectAnswer = question.format === 'digital'
+                    ? `${incorrectHour}:${incorrectMinute.toString().padStart(2, '0')}`
+                    : generateTextTime(incorrectHour, incorrectMinute);
+                
+                if (!allOptions.includes(incorrectAnswer)) {
+                    allOptions.push(incorrectAnswer);
+                }
+            }
+            
+            // Display all options
+            allOptions.forEach(option => {
+                const isOptionCorrect = option === correctAnswer;
+                const isSelected = option === selectedAnswer;
+                let optionClass = 'option';
+                let disabled = 'disabled';
+                let style = '';
+                
+                if (isOptionCorrect) {
+                    optionClass += ' correct-answer';
+                    style = 'opacity: 1;';
+                } else if (isSelected) {
+                    optionClass += ' incorrect';
+                    style = 'opacity: 1;';
+                } else {
+                    style = 'opacity: 0.5;';
+                }
+                
+                optionsHtml += `<button class="${optionClass}" ${disabled} style="${style}">${option}</button>`;
+            });
+            optionsHtml += '</div>';
+            
+            // Generate clock numbers HTML
+            let clockNumbersHtml = '<div class="clock-number">';
+            for (let i = 1; i <= 12; i++) {
+                const angle = (i - 3) * 30 * Math.PI / 180;
+                const x = 100 + 85 * Math.cos(angle);
+                const y = 100 + 85 * Math.sin(angle);
+                clockNumbersHtml += `<span style="left: ${x - 12}px; top: ${y - 12}px;">${i}</span>`;
+            }
+            clockNumbersHtml += '</div>';
+
+            questionDetail.innerHTML = `
+                <h3 style="color: #ff6b6b; margin-bottom: 10px;">Question ${index + 1}</h3>
+                <p style="color: #666; margin-bottom: 15px;">
+                    Format: <strong>${question.format === 'digital' ? 'Digital' : 'Text'}</strong> | 
+                    ${question.isCorrect ? '✅ Correct' : '❌ Incorrect'}
+                </p>
+                
+                <div class="question-detail-clock">
+                    ${clockNumbersHtml}
+                    <div class="hand hour-hand" style="transform: rotate(${hourAngle}deg);"></div>
+                    <div class="hand minute-hand" style="transform: rotate(${minuteAngle}deg);"></div>
+                    <div class="center-circle"></div>
+                </div>
+                
+                ${optionsHtml}
+                
+                <div style="margin-top: 20px; padding: 15px; background: ${question.isCorrect ? '#e8f8f7' : '#ffe8e8'}; border-radius: 10px;">
+                    <p style="font-size: 1.1rem; margin: 5px 0;">
+                        <strong>Your answer:</strong> ${question.selectedAnswer}
+                    </p>
+                    ${!question.isCorrect ? `
+                        <p style="font-size: 1.1rem; margin: 5px 0; color: #ff6b6b;">
+                            <strong>Correct answer:</strong> ${question.correctAnswer}
+                        </p>
+                    ` : `
+                        <p style="font-size: 1.1rem; margin: 5.5 0; color: #4ecdc4;">
+                            <strong>Well done!</strong> 🌟
+                        </p>
+                    `}
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="back-to-buttons-btn" onclick="backToReviewButtons()">← Back to Review</button>
+                </div>
+            `;
+            
+            // Scroll to detail
+            questionDetail.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function backToReviewButtons() {
+            questionDetail.classList.remove('show');
+            reviewButtons.style.display = 'grid';
+            playAgainSection.style.display = 'block';
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
