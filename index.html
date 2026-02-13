@@ -10,22 +10,29 @@
         body {
             font-family: 'Comic Neue', cursive, Arial, sans-serif;
             text-align: center;
-            margin: 20px;
+            margin: 10px;
+            padding: 10px;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        * {
+            box-sizing: border-box;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
             color: #ff6b6b;
-            text-shadow: 3px 3px 0 #ffd166;
-            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 #ffd166;
+            margin-bottom: 15px;
             letter-spacing: 1px;
+            word-wrap: break-word;
         }
         .clock-container {
-            width: 300px;
-            height: 300px;
-            margin: 20px auto;
+            width: min(300px, 70vw);
+            height: min(300px, 70vw);
+            margin: 15px auto;
             position: relative;
-            border: 15px solid #ff9a76;
+            border: min(15px, 4vw) solid #ff9a76;
             border-radius: 50%;
             background: linear-gradient(45deg, #fff5e6, #ffe8cc);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
@@ -35,53 +42,52 @@
             transform-origin: bottom center;
             left: 50%;
             bottom: 50%;
+            transform: translateX(-50%);
             background-color: #333;
         }
         .hour-hand {
-            width: 8px;
-            height: 80px;
-            margin-left: -4px;
+            width: min(8px, 2.5vw);
+            height: min(80px, 25vw);
             border-radius: 4px;
             background-color: #ff6b6b;
         }
         .minute-hand {
-            width: 6px;
-            height: 120px;
-            margin-left: -3px;
+            width: min(6px, 2vw);
+            height: min(120px, 35vw);
             border-radius: 3px;
             background-color: #4ecdc4;
         }
         .center-circle {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: min(20px, 6vw);
+            height: min(20px, 6vw);
             background-color: #ffd166;
             border-radius: 50%;
             left: 50%;
             top: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
+            transform: translate(-50%, -50%);
             z-index: 10;
-            border: 3px solid #ff9a76;
+            border: min(3px, 1vw) solid #ff9a76;
         }
         .options {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            margin: 20px auto;
-            max-width: 500px;
+            margin: 15px auto;
+            max-width: 600px;
+            padding: 0 10px;
         }
         .option {
-            padding: 15px 20px;
+            padding: clamp(10px, 3vw, 15px) clamp(15px, 4vw, 20px);
             background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
             color: #333;
             border: none;
             border-radius: 15px;
             cursor: pointer;
-            font-size: 1.1rem;
-            flex: 1 0 40%;
-            min-width: 200px;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            flex: 1 0 45%;
+            min-width: min(200px, 42vw);
             transition: all 0.3s ease;
             font-weight: bold;
             box-shadow: 0 4px 0 #6bc5a3;
@@ -104,10 +110,11 @@
             animation: pulse 1s infinite;
         }
         .feedback {
-            font-size: 1.8rem;
-            margin: 20px;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin: 15px;
             min-height: 40px;
             font-weight: bold;
+            padding: 0 10px;
         }
         .correct {
             color: #4ecdc4;
@@ -118,29 +125,29 @@
             text-shadow: 1px 1px 0 #e63946;
         }
         .format-toggle {
-            margin: 20px;
+            margin: 15px;
         }
         .clock-number {
             position: absolute;
             width: 100%;
             height: 100%;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: clamp(0.9rem, 3vw, 1.3rem);
             font-weight: bold;
         }
         .clock-number span {
             position: absolute;
             display: block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
+            width: min(30px, 9vw);
+            height: min(30px, 9vw);
+            line-height: min(30px, 9vw);
             color: #333;
             text-shadow: 1px 1px 0 #ffd166;
         }
         .score-display {
-            font-size: 1.5rem;
-            margin: 10px;
-            padding: 10px 20px;
+            font-size: clamp(1rem, 3.5vw, 1.5rem);
+            margin: 8px;
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
             background: linear-gradient(145deg, #ffd166, #ffc145);
             border-radius: 20px;
             display: inline-block;
@@ -149,9 +156,9 @@
             box-shadow: 0 4px 0 #e0b14d;
         }
         .progress-display {
-            font-size: 1.2rem;
-            margin: 10px;
-            padding: 10px 20px;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin: 8px;
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
             background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
             border-radius: 20px;
             display: inline-block;
@@ -161,29 +168,29 @@
         }
         .review-container {
             display: none;
-            margin: 20px auto;
-            max-width: 700px;
+            margin: 15px auto;
+            max-width: 95vw;
             background: white;
-            padding: 20px;
+            padding: clamp(15px, 4vw, 20px);
             border-radius: 20px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         .review-buttons {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-            padding: 20px;
+            gap: clamp(8px, 2vw, 10px);
+            margin: 15px 0;
+            padding: clamp(15px, 4vw, 20px);
             background: #f8f9fa;
             border-radius: 15px;
         }
         .review-btn {
-            padding: 15px;
+            padding: clamp(10px, 3vw, 15px);
             background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
             font-weight: bold;
             color: #333;
             transition: all 0.3s ease;
@@ -212,8 +219,8 @@
         }
         .question-detail {
             display: none;
-            margin-top: 20px;
-            padding: 20px;
+            margin-top: 15px;
+            padding: clamp(15px, 4vw, 20px);
             background: linear-gradient(145deg, #fff9e6, #fff5cc);
             border-radius: 15px;
             border: 3px solid #ffd166;
@@ -233,10 +240,10 @@
             }
         }
         .question-detail-clock {
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            border: 12px solid #ff9a76;
+            width: min(200px, 55vw);
+            height: min(200px, 55vw);
+            margin: 15px auto;
+            border: min(12px, 3.5vw) solid #ff9a76;
             border-radius: 50%;
             background: linear-gradient(45deg, #fff5e6, #ffe8cc);
             position: relative;
@@ -246,86 +253,84 @@
             transform-origin: bottom center;
             left: 50%;
             bottom: 50%;
+            transform: translateX(-50%);
         }
         .question-detail-clock .hour-hand {
-            width: 8px;
-            height: 70px;
-            margin-left: -4px;
+            width: min(8px, 2.5vw);
+            height: min(70px, 22vw);
             background-color: #ff6b6b;
         }
         .question-detail-clock .minute-hand {
-            width: 6px;
-            height: 100px;
-            margin-left: -3px;
+            width: min(6px, 2vw);
+            height: min(100px, 30vw);
             background-color: #4ecdc4;
         }
         .question-detail-clock .center-circle {
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: min(16px, 5vw);
+            height: min(16px, 5vw);
             background-color: #ffd166;
             border-radius: 50%;
             left: 50%;
             top: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
+            transform: translate(-50%, -50%);
         }
         .question-detail-clock .clock-number {
             position: absolute;
             width: 100%;
             height: 100%;
             text-align: center;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
             font-weight: bold;
         }
         .question-detail-clock .clock-number span {
             position: absolute;
             display: block;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
+            width: min(24px, 7vw);
+            height: min(24px, 7vw);
+            line-height: min(24px, 7vw);
             color: #333;
             text-shadow: 1px 1px 0 #ffd166;
         }
         .back-to-buttons-btn {
-            padding: 10px 20px;
+            padding: clamp(8px, 2.5vw, 10px) clamp(15px, 4vw, 20px);
             background: linear-gradient(145deg, #ff9a76, #ff8a61);
             color: white;
             border: none;
             border-radius: 15px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 3vw, 1rem);
             font-weight: bold;
             margin-top: 15px;
             transition: all 0.3s ease;
             box-shadow: 0 3px 0 #e07a4f;
         }
-        
+
         .back-to-buttons-btn:hover {
             background: linear-gradient(145deg, #ff8a61, #ff7a4c);
             transform: translateY(-2px);
             box-shadow: 0 5px 0 #e07a4f;
         }
         #playAgainBtn {
-            padding: 15px 30px;
+            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px);
             background: linear-gradient(145deg, #4ecdc4, #36b7ae);
             color: white;
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
             font-weight: bold;
             transition: all 0.3s ease;
             box-shadow: 0 4px 0 #2a9d8f;
-            margin: 20px;
+            margin: 15px;
         }
-        
+
         #playAgainBtn:hover {
             background: linear-gradient(145deg, #36b7ae, #2a9d8f);
             transform: translateY(-2px);
             box-shadow: 0 6px 0 #2a9d8f;
         }
-        
+
         #playAgainBtn:active {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #2a9d8f;
@@ -333,101 +338,65 @@
         .timer-display {
             display: none;
         }
-        
+
         #toggleFormat {
-            padding: 12px 25px;
+            padding: clamp(10px, 2.5vw, 12px) clamp(18px, 4.5vw, 25px);
             background: linear-gradient(145deg, #ff9a76, #ff8a61);
             color: white;
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
             font-weight: bold;
             transition: all 0.3s ease;
             box-shadow: 0 4px 0 #e07a4f;
         }
-        
+
         #toggleFormat:hover {
             background: linear-gradient(145deg, #ff8a61, #ff7a4c);
             transform: translateY(-2px);
             box-shadow: 0 6px 0 #e07a4f;
         }
-        
+
         #toggleFormat:active {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #e07a4f;
         }
-        
+
         @keyframes pulse {
-            0% { 
+            0% {
                 box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
                 transform: translateY(-1px);
             }
-            50% { 
+            50% {
                 box-shadow: 0 0 20px #4ecdc4, 0 6px 0 #36b7ae;
                 transform: translateY(-3px);
             }
-            100% { 
+            100% {
                 box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
                 transform: translateY(-1px);
             }
         }
-        
-        /* 添加一些装饰元素 */
-        .decoration {
-            position: absolute;
-            z-index: -1;
+
+        /* Responsive adjustments for small screens */
+        @media (max-width: 480px) {
+            .review-buttons {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .review-btn {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
         }
-        
-        .sun {
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, #ffd166, #ffb347);
-            border-radius: 50%;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            box-shadow: 0 0 20px rgba(255, 209, 102, 0.5);
-        }
-        
-        .cloud {
-            width: 60px;
-            height: 30px;
-            background: white;
-            border-radius: 15px;
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        
-        .cloud:before, .cloud:after {
-            content: '';
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-        }
-        
-        .cloud:before {
-            width: 25px;
-            height: 25px;
-            top: -10px;
-            left: 10px;
-        }
-        
-        .cloud:after {
-            width: 20px;
-            height: 20px;
-            top: -8px;
-            right: 10px;
+
+        @media (max-width: 360px) {
+            .review-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 装饰元素 -->
-    <div class="sun"></div>
-    <div class="cloud"></div>
-    
     <h1>What time is it now?</h1>
     <div class="score-display">Score: <span id="score">0</span></div>
     <div class="progress-display">Question: <span id="currentQuestion">1</span>/10</div>
@@ -524,19 +493,20 @@
         }
         
         function createClockNumbers() {
-            const radius = 130;
-            const centerX = 150;
-            const centerY = 150;
-            
+            // Use percentage-based positioning for responsive design
+            const radius = 40; // 40% from center
+            const clockContainer = document.querySelector('.clock-container');
+
             for (let i = 1; i <= 12; i++) {
                 const angle = (i - 3) * 30 * Math.PI / 180;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-                
+                const x = 50 + radius * Math.cos(angle);
+                const y = 50 + radius * Math.sin(angle);
+
                 const numberSpan = document.createElement('span');
                 numberSpan.textContent = i;
-                numberSpan.style.left = `${x - 15}px`;
-                numberSpan.style.top = `${y - 15}px`;
+                numberSpan.style.left = `${x}%`;
+                numberSpan.style.top = `${y}%`;
+                numberSpan.style.transform = 'translate(-50%, -50%)';
                 numberSpan.style.fontSize = '1.3rem';
                 clockNumbers.appendChild(numberSpan);
             }
@@ -827,9 +797,9 @@
             let clockNumbersHtml = '<div class="clock-number">';
             for (let i = 1; i <= 12; i++) {
                 const angle = (i - 3) * 30 * Math.PI / 180;
-                const x = 100 + 85 * Math.cos(angle);
-                const y = 100 + 85 * Math.sin(angle);
-                clockNumbersHtml += `<span style="left: ${x - 12}px; top: ${y - 12}px;">${i}</span>`;
+                const x = 50 + 42 * Math.cos(angle);
+                const y = 50 + 42 * Math.sin(angle);
+                clockNumbersHtml += `<span style="left: ${x}%; top: ${y}%; transform: translate(-50%, -50%);">${i}</span>`;
             }
             clockNumbersHtml += '</div>';
 
