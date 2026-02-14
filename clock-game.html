@@ -361,30 +361,6 @@
             display: none;
         }
 
-        #toggleFormat {
-            padding: clamp(10px, 2.5vw, 12px) clamp(18px, 4.5vw, 25px);
-            background: linear-gradient(145deg, #ff9a76, #ff8a61);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: clamp(0.9rem, 3vw, 1.1rem);
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 0 #e07a4f;
-        }
-
-        #toggleFormat:hover {
-            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #e07a4f;
-        }
-
-        #toggleFormat:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #e07a4f;
-        }
-
         @keyframes pulse {
             0% {
                 box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
@@ -422,10 +398,6 @@
     <h1>What time is it now?</h1>
     <div class="score-display">Score: <span id="score">0</span></div>
     <div class="progress-display">Question: <span id="currentQuestion">1</span>/10</div>
-    <div class="timer-display">Next question in: <span id="timer">2</span>s</div>
-    <div class="format-toggle">
-        <button id="toggleFormat">Switch to Digital/Text Format</button>
-    </div>
     <div class="clock-container" id="clock">
         <div class="clock-number" id="clockNumbers"></div>
         <div class="hand hour-hand" id="hourHand"></div>
@@ -465,7 +437,6 @@
         const minuteHand = document.getElementById('minuteHand');
         const optionsContainer = document.getElementById('options');
         const feedbackElement = document.getElementById('feedback');
-        const toggleFormatBtn = document.getElementById('toggleFormat');
         const clockNumbers = document.getElementById('clockNumbers');
         const scoreElement = document.getElementById('score');
         const currentQuestionElement = document.getElementById('currentQuestion');
@@ -476,16 +447,14 @@
         const playAgainBtn = document.getElementById('playAgainBtn');
         const playAgainSection = document.getElementById('playAgainSection');
         const clockContainer = document.getElementById('clock');
-        const formatToggle = document.querySelector('.format-toggle');
-        
+
         // Initialize clock numbers
         createClockNumbers();
-        
+
         // Initialize game
         startNewRound();
-        
+
         // Event listeners
-        toggleFormatBtn.addEventListener('click', toggleFormat);
         playAgainBtn.addEventListener('click', startNewRound);
         document.getElementById('homeBtn').addEventListener('click', () => {
             window.location.href = 'index.html';
@@ -504,7 +473,6 @@
 
             // Show game elements, hide review
             clockContainer.style.display = 'block';
-            formatToggle.style.display = 'block';
             optionsContainer.style.display = 'flex';
             reviewContainer.style.display = 'none';
             playAgainSection.style.display = 'none';
@@ -512,12 +480,7 @@
             // Start first question
             generateNewQuestion();
         }
-        
-        function toggleFormat() {
-            isDigitalFormat = !isDigitalFormat;
-            generateNewQuestion();
-        }
-        
+
         function createClockNumbers() {
             // Use percentage-based positioning for responsive design
             const radius = 40; // 40% from center
@@ -544,7 +507,10 @@
                 showReview();
                 return;
             }
-            
+
+            // Randomly choose format for this question
+            isDigitalFormat = Math.random() < 0.5;
+
             // Update progress display
             currentQuestionElement.textContent = currentQuestionNum;
             
