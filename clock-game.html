@@ -42,19 +42,18 @@
             transform-origin: bottom center;
             left: 50%;
             bottom: 50%;
+            transform: translateX(-50%);
             background-color: #333;
         }
         .hour-hand {
             width: min(8px, 2.5vw);
             height: min(80px, 25vw);
-            margin-left: min(-4px, -1.25vw);
             border-radius: 4px;
             background-color: #ff6b6b;
         }
         .minute-hand {
             width: min(6px, 2vw);
             height: min(120px, 35vw);
-            margin-left: min(-3px, -1vw);
             border-radius: 3px;
             background-color: #4ecdc4;
         }
@@ -66,8 +65,7 @@
             border-radius: 50%;
             left: 50%;
             top: 50%;
-            margin-left: min(-10px, -3vw);
-            margin-top: min(-10px, -3vw);
+            transform: translate(-50%, -50%);
             z-index: 10;
             border: min(3px, 1vw) solid #ff9a76;
         }
@@ -255,17 +253,16 @@
             transform-origin: bottom center;
             left: 50%;
             bottom: 50%;
+            transform: translateX(-50%);
         }
         .question-detail-clock .hour-hand {
             width: min(8px, 2.5vw);
             height: min(70px, 22vw);
-            margin-left: min(-4px, -1.25vw);
             background-color: #ff6b6b;
         }
         .question-detail-clock .minute-hand {
             width: min(6px, 2vw);
             height: min(100px, 30vw);
-            margin-left: min(-3px, -1vw);
             background-color: #4ecdc4;
         }
         .question-detail-clock .center-circle {
@@ -276,8 +273,7 @@
             border-radius: 50%;
             left: 50%;
             top: 50%;
-            margin-left: min(-8px, -2.5vw);
-            margin-top: min(-8px, -2.5vw);
+            transform: translate(-50%, -50%);
         }
         .question-detail-clock .clock-number {
             position: absolute;
@@ -338,6 +334,28 @@
         #playAgainBtn:active {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #2a9d8f;
+        }
+        #homeBtn {
+            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px);
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #e07a4f;
+            margin: 15px;
+        }
+        #homeBtn:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #e07a4f;
+        }
+        #homeBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e07a4f;
         }
         .timer-display {
             display: none;
@@ -423,8 +441,9 @@
         <div id="reviewSummary"></div>
         <div id="reviewButtons" class="review-buttons"></div>
         <div id="questionDetail" class="question-detail"></div>
-        <div id="playAgainSection">
-            <button id="playAgainBtn">🎮 Play Again</button>
+        <div id="playAgainSection" style="display: none;">
+            <button id="playAgainBtn" style="margin-right: 10px;">🎮 Play Again</button>
+            <button id="homeBtn">🏠 Home</button>
         </div>
     </div>
 
@@ -468,6 +487,9 @@
         // Event listeners
         toggleFormatBtn.addEventListener('click', toggleFormat);
         playAgainBtn.addEventListener('click', startNewRound);
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
         
         function startNewRound() {
             // Reset game state
@@ -479,13 +501,13 @@
             // Update displays
             scoreElement.textContent = score;
             currentQuestionElement.textContent = currentQuestionNum;
-            
+
             // Show game elements, hide review
             clockContainer.style.display = 'block';
             formatToggle.style.display = 'block';
             optionsContainer.style.display = 'flex';
             reviewContainer.style.display = 'none';
-            playAgainSection.style.display = 'block';
+            playAgainSection.style.display = 'none';
             
             // Start first question
             generateNewQuestion();
@@ -497,19 +519,20 @@
         }
         
         function createClockNumbers() {
-            const radius = 130;
-            const centerX = 150;
-            const centerY = 150;
-            
+            // Use percentage-based positioning for responsive design
+            const radius = 40; // 40% from center
+            const clockContainer = document.querySelector('.clock-container');
+
             for (let i = 1; i <= 12; i++) {
                 const angle = (i - 3) * 30 * Math.PI / 180;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-                
+                const x = 50 + radius * Math.cos(angle);
+                const y = 50 + radius * Math.sin(angle);
+
                 const numberSpan = document.createElement('span');
                 numberSpan.textContent = i;
-                numberSpan.style.left = `${x - 15}px`;
-                numberSpan.style.top = `${y - 15}px`;
+                numberSpan.style.left = `${x}%`;
+                numberSpan.style.top = `${y}%`;
+                numberSpan.style.transform = 'translate(-50%, -50%)';
                 numberSpan.style.fontSize = '1.3rem';
                 clockNumbers.appendChild(numberSpan);
             }
@@ -689,7 +712,7 @@
             
             // Show review container
             reviewContainer.style.display = 'block';
-            playAgainSection.style.display = 'none';
+            playAgainSection.style.display = 'block';
             questionDetail.classList.remove('show');
             
             // Clear previous review
@@ -800,9 +823,9 @@
             let clockNumbersHtml = '<div class="clock-number">';
             for (let i = 1; i <= 12; i++) {
                 const angle = (i - 3) * 30 * Math.PI / 180;
-                const x = 100 + 85 * Math.cos(angle);
-                const y = 100 + 85 * Math.sin(angle);
-                clockNumbersHtml += `<span style="left: ${x - 12}px; top: ${y - 12}px;">${i}</span>`;
+                const x = 50 + 42 * Math.cos(angle);
+                const y = 50 + 42 * Math.sin(angle);
+                clockNumbersHtml += `<span style="left: ${x}%; top: ${y}%; transform: translate(-50%, -50%);">${i}</span>`;
             }
             clockNumbersHtml += '</div>';
 

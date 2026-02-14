@@ -279,6 +279,28 @@
             transform: translateY(2px);
             box-shadow: 0 2px 0 #2a9d8f;
         }
+        #homeBtn {
+            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px);
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #e07a4f;
+            margin: 15px;
+        }
+        #homeBtn:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #e07a4f;
+        }
+        #homeBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e07a4f;
+        }
         @keyframes pulse {
             0% {
                 box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
@@ -330,8 +352,9 @@
         <div id="reviewSummary"></div>
         <div id="reviewButtons" class="review-buttons"></div>
         <div id="questionDetail" class="question-detail"></div>
-        <div id="playAgainSection" style="display: block;">
-            <button id="playAgainBtn">🎮 Play Again</button>
+        <div id="playAgainSection" style="display: none;">
+            <button id="playAgainBtn" style="margin-right: 10px;">🎮 Play Again</button>
+            <button id="homeBtn">🏠 Home</button>
         </div>
     </div>
 
@@ -383,6 +406,9 @@
 
         // 事件監聽器
         playAgainBtn.addEventListener('click', startNewRound);
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
 
         function startNewRound() {
             // 重置遊戲狀態
