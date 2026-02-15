@@ -197,13 +197,12 @@
             <button class="play-btn">▶ Play</button>
         </div>
 
-        <!-- Coming Soon Game 1 -->
-        <div class="game-card coming-soon">
-            <span class="coming-soon-badge">Coming Soon</span>
+        <!-- Number Learning Game -->
+        <div class="game-card" onclick="openGame('number-review')">
             <span class="game-icon">🔢</span>
             <h2 class="game-title">Number Learning Game</h2>
-            <p class="game-description">Learn numbers from 1 to 100! Match Chinese characters with Arabic numerals and English words.</p>
-            <button class="play-btn" disabled>🔒 Locked</button>
+            <p class="game-description">Learn numbers from 1 to 100! Match Chinese characters with English words.</p>
+            <button class="play-btn">▶ Play</button>
         </div>
 
         <!-- Coming Soon Game 2 -->
@@ -242,6 +241,9 @@
                     break;
                 case 'month-review':
                     window.location.href = 'month-review.html';
+                    break;
+                case 'number-review':
+                    window.location.href = 'number-review.html';
                     break;
                 default:
                     console.log('Game coming soon!');
