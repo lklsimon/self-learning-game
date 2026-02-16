@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Learning Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Neue', cursive, Arial, sans-serif;
+            text-align: center;
+            margin: 10px;
+            padding: 10px;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e0e8ed 100%);
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: #ff6b6b;
+            text-shadow: 2px 2px 0 #ffd166;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            word-wrap: break-word;
+        }
+        .color-display {
+            width: min(280px, 80vw);
+            height: min(280px, 80vw);
+            margin: 20px auto;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            border: 6px solid #333;
+            transition: background-color 0.3s ease;
+        }
+        .color-box {
+            width: min(200px, 60vw);
+            height: min(200px, 60vw);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+        }
+        .chinese-color {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .decoration {
+            position: absolute;
+            font-size: clamp(2rem, 6vw, 3rem);
+            opacity: 0.3;
+        }
+        .decoration-1 { top: 15px; left: 15px; }
+        .decoration-2 { bottom: 15px; right: 15px; }
+        .decoration-3 { top: 20px; right: 20px; }
+        .decoration-4 { bottom: 20px; left: 20px; }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px auto;
+            max-width: 600px;
+            padding: 0 10px;
+        }
+        .option {
+            padding: clamp(12px, 3.5vw, 18px) clamp(20px, 5vw, 28px);
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            color: #333;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.2vw, 1.3rem);
+            flex: 1 0 45%;
+            min-width: min(120px, 30vw);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #6bc5a3;
+            text-transform: capitalize;
+        }
+        .option:hover:not(:disabled) {
+            background: linear-gradient(145deg, #8dd7b9, #7bc9a9);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #6bc5a3;
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .option.incorrect {
+            background: linear-gradient(145deg, #ff8ba0, #ff6b6b);
+            box-shadow: 0 4px 0 #e05555;
+        }
+        .option.correct-answer {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            box-shadow: 0 0 15px #4ecdc4;
+            animation: pulse 1s infinite;
+        }
+        .feedback {
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            margin: 15px;
+            min-height: 50px;
+            font-weight: bold;
+            padding: 0 10px;
+        }
+        .correct {
+            color: #4ecdc4;
+            text-shadow: 1px 1px 0 #2a9d8f;
+        }
+        .incorrect {
+            color: #ff6b6b;
+            text-shadow: 1px 1px 0 #e63946;
+        }
+        .score-display {
+            font-size: clamp(1rem, 3.5vw, 1.5rem);
+            margin: 8px;
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
+            background: linear-gradient(145deg, #ffd166, #ffc145);
+            border-radius: 20px;
+            display: inline-block;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #e0b14d;
+        }
+        .progress-display {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin: 8px;
+            padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px);
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            border-radius: 20px;
+            display: inline-block;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #6bc5a3;
+        }
+        .review-container {
+            display: none;
+            margin: 15px auto;
+            max-width: 95vw;
+            background: white;
+            padding: clamp(15px, 4vw, 20px);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .review-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: clamp(8px, 2vw, 10px);
+            margin: 15px 0;
+            padding: clamp(15px, 4vw, 20px);
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .review-btn {
+            padding: clamp(10px, 3vw, 15px);
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 0 #6bc5a3;
+        }
+        .review-btn:hover {
+            background: linear-gradient(145deg, #8dd7b9, #7bc9a9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #6bc5a3;
+        }
+        .review-btn.correct {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            box-shadow: 0 3px 0 #2a9d8f;
+        }
+        .review-btn.correct:hover {
+            background: linear-gradient(145deg, #36b7ae, #2a9d8f);
+            box-shadow: 0 5px 0 #2a9d8f;
+        }
+        .review-btn.incorrect {
+            background: linear-gradient(145deg, #ff8ba0, #ff6b6b);
+            box-shadow: 0 3px 0 #e05555;
+        }
+        .review-btn.incorrect:hover {
+            background: linear-gradient(145deg, #ff6b6b, #e05555);
+            box-shadow: 0 5px 0 #e05555;
+        }
+        .question-detail {
+            display: none;
+            margin-top: 15px;
+            padding: clamp(15px, 4vw, 20px);
+            background: linear-gradient(145deg, #fff9e6, #fff5cc);
+            border-radius: 15px;
+            border: 3px solid #ffd166;
+        }
+        .question-detail.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .question-detail-color {
+            width: min(150px, 40vw);
+            height: min(150px, 40vw);
+            margin: 15px auto;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid #333;
+        }
+        .question-detail-color .chinese-color {
+            font-size: clamp(2.5rem, 8vw, 3.5rem);
+        }
+        .back-to-buttons-btn {
+            padding: clamp(8px, 2.5vw, 10px) clamp(15px, 4vw, 20px);
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 0 #e07a4f;
+        }
+        .back-to-buttons-btn:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #e07a4f;
+        }
+        #playAgainBtn {
+            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px);
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #2a9d8f;
+            margin: 15px;
+        }
+        #playAgainBtn:hover {
+            background: linear-gradient(145deg, #36b7ae, #2a9d8f);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #2a9d8f;
+        }
+        #playAgainBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2a9d8f;
+        }
+        #homeBtn {
+            padding: clamp(12px, 3vw, 15px) clamp(20px, 5vw, 30px);
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #e07a4f;
+            margin: 15px;
+        }
+        #homeBtn:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #e07a4f;
+        }
+        #homeBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e07a4f;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
+                transform: translateY(-1px);
+            }
+            50% {
+                box-shadow: 0 0 20px #4ecdc4, 0 6px 0 #36b7ae;
+                transform: translateY(-3px);
+            }
+            100% {
+                box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
+                transform: translateY(-1px);
+            }
+        }
+        @media (max-width: 480px) {
+            .review-buttons {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .review-btn {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+        @media (max-width: 360px) {
+            .review-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Learning Game</h1>
+    <div class="score-display">Score: <span id="score">0</span></div>
+    <div class="progress-display">Question: <span id="currentQuestion">1</span>/10</div>
+    <div class="color-display" id="colorDisplay">
+        <div class="decoration decoration-1">🎨</div>
+        <div class="decoration decoration-2">🎨</div>
+        <div class="decoration decoration-3">✨</div>
+        <div class="decoration decoration-4">✨</div>
+        <div class="color-box" id="colorBox">
+            <div class="chinese-color" id="chineseColor">紅色</div>
+        </div>
+    </div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+
+    <div class="review-container" id="reviewContainer">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px;">📊 Review Your Answers</h2>
+        <div id="reviewSummary"></div>
+        <div id="reviewButtons" class="review-buttons"></div>
+        <div id="questionDetail" class="question-detail"></div>
+        <div id="playAgainSection" style="display: none;">
+            <button id="playAgainBtn" style="margin-right: 10px;">🎮 Play Again</button>
+            <button id="homeBtn">🏠 Home</button>
+        </div>
+    </div>
+
+    <script>
+        // 顏色數據 (小學生程度)
+        const colorData = [
+            { chinese: '紅色', english: 'Red', hex: '#FF4444' },
+            { chinese: '橙色', english: 'Orange', hex: '#FFA500' },
+            { chinese: '黃色', english: 'Yellow', hex: '#FFD700' },
+            { chinese: '綠色', english: 'Green', hex: '#4CAF50' },
+            { chinese: '藍色', english: 'Blue', hex: '#2196F3' },
+            { chinese: '紫色', english: 'Purple', hex: '#9C27B0' },
+            { chinese: '粉色', english: 'Pink', hex: '#FF69B4' },
+            { chinese: '棕色', english: 'Brown', hex: '#8B4513' },
+            { chinese: '黑色', english: 'Black', hex: '#333333' },
+            { chinese: '白色', english: 'White', hex: '#FFFFFF' },
+            { chinese: '灰色', english: 'Gray', hex: '#808080' },
+            { chinese: '金色', english: 'Gold', hex: '#FFD700' }
+        ];
+
+        // 遊戲狀態
+        let currentColorIndex = 0;
+        let correctAnswer = '';
+        let score = 0;
+        let timer = null;
+        let questionHistory = [];
+        let currentQuestionNum = 1;
+        let remainingColors = [...Array(colorData.length).keys()];
+        const QUESTIONS_PER_ROUND = 10;
+
+        // DOM 元素
+        const chineseColor = document.getElementById('chineseColor');
+        const colorBox = document.getElementById('colorBox');
+        const colorDisplay = document.getElementById('colorDisplay');
+        const optionsContainer = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const scoreElement = document.getElementById('score');
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        const reviewContainer = document.getElementById('reviewContainer');
+        const reviewSummary = document.getElementById('reviewSummary');
+        const reviewButtons = document.getElementById('reviewButtons');
+        const questionDetail = document.getElementById('questionDetail');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const playAgainSection = document.getElementById('playAgainSection');
+
+        // 初始化遊戲
+        startNewRound();
+
+        // 事件監聽器
+        playAgainBtn.addEventListener('click', startNewRound);
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        function startNewRound() {
+            // 重置遊戲狀態
+            score = 0;
+            currentQuestionNum = 1;
+            questionHistory = [];
+            remainingColors = [...Array(colorData.length).keys()];
+
+            // 更新顯示
+            scoreElement.textContent = score;
+            currentQuestionElement.textContent = currentQuestionNum;
+
+            // 顯示遊顯示遊戲元素，隱藏複習
+            colorDisplay.style.display = 'flex';
+            optionsContainer.style.display = 'flex';
+            reviewContainer.style.display = 'none';
+            playAgainSection.style.display = 'none';
+
+            // 開始第一題
+            generateNewQuestion();
+        }
+
+        function generateNewQuestion() {
+            // 檢查是否完成所有問題
+            if (currentQuestionNum > QUESTIONS_PER_ROUND || remainingColors.length === 0) {
+                showReview();
+                return;
+            }
+
+            // 更新進度顯示
+            currentQuestionElement.textContent = currentQuestionNum;
+
+            // 重置計時器
+            if (timer) {
+                clearTimeout(timer);
+                timer = null;
+            }
+
+            // 重置反饋
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+
+            // 移除所有按鈕樣式
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('correct-answer', 'incorrect');
+                if (option.disabled) {
+                    option.disabled = false;
+                    option.style.background = 'linear-gradient(145deg, #a8e6cf, #8dd7b9)';
+                    option.style.boxShadow = '0 4px 0 #6bc5a3';
+                }
+            });
+
+            // 隨機選擇一個顏色
+            const randomIndex = Math.floor(Math.random() * remainingColors.length);
+            currentColorIndex = remainingColors[randomIndex];
+            remainingColors.splice(randomIndex, 1);
+
+            // 更新顏色顯示
+            updateColorDisplay();
+
+            // 生成選項
+            generateOptions();
+        }
+
+        function updateColorDisplay() {
+            const color = colorData[currentColorIndex];
+            chineseColor.textContent = color.chinese;
+            colorBox.style.backgroundColor = color.hex;
+
+            // 根據顏色亮度調整文字顏色
+            const brightness = getBrightness(color.hex);
+            chineseColor.style.color = brightness > 128 ? '#333' : 'white';
+        }
+
+        function getBrightness(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
+
+        function generateOptions() {
+            optionsContainer.innerHTML = '';
+
+            const currentColor = colorData[currentColorIndex];
+            correctAnswer = currentColor.english;
+
+            const options = [correctAnswer];
+
+            // 生成錯誤選項
+            while (options.length < 4) {
+                const randomIndex = Math.floor(Math.random() * colorData.length);
+                const incorrectColor = colorData[randomIndex].english;
+
+                if (!options.includes(incorrectColor) && incorrectColor !== correctAnswer) {
+                    options.push(incorrectColor);
+                }
+            }
+
+            shuffleArray(options);
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.setAttribute('data-answer', option);
+                button.addEventListener('click', () => checkAnswer(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedAnswer) {
+            // 禁用所有選項以防止多次點擊
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.disabled = true;
+            });
+
+            // 記錄問題歷史
+            const isCorrect = selectedAnswer === correctAnswer;
+            questionHistory.push({
+                colorIndex: currentColorIndex,
+                chinese: colorData[currentColorIndex].chinese,
+                english: colorData[currentColorIndex].english,
+                hex: colorData[currentColorIndex].hex,
+                correctAnswer: correctAnswer,
+                selectedAnswer: selectedAnswer,
+                isCorrect: isCorrect
+            });
+
+            if (isCorrect) {
+                feedbackElement.textContent = 'Correct! Well done! ✨';
+                feedbackElement.className = 'feedback correct';
+                score++;
+                scoreElement.textContent = score;
+
+                // 高亮正確答案
+                options.forEach(option => {
+                    if (option.getAttribute('data-answer') === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    }
+                });
+            } else {
+                feedbackElement.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedbackElement.className = 'feedback incorrect';
+
+                // 高亮正確答案並標記錯誤答案
+                options.forEach(option => {
+                    if (option.getAttribute('data-answer') === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    } else if (option.getAttribute('data-answer') === selectedAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                });
+            }
+
+            // 2秒後進入下一題
+            timer = setTimeout(() => {
+                currentQuestionNum++;
+                generateNewQuestion();
+            }, 2000);
+        }
+
+        function showReview() {
+            // 隱藏遊戲元素
+            colorDisplay.style.display = 'none';
+            optionsContainer.style.display = 'none';
+            feedbackElement.textContent = '';
+
+            // 顯示複習容器
+            reviewContainer.style.display = 'block';
+            playAgainSection.style.display = 'block';
+            questionDetail.classList.remove('show');
+
+            // 清除之前的複習
+            reviewSummary.innerHTML = '';
+            reviewButtons.innerHTML = '';
+
+            // 計算總結
+            const correctCount = questionHistory.filter(q => q.isCorrect).length;
+            const summaryHtml = `
+                <div style="text-align: center; padding: 20px; background: linear-gradient(145deg, #e8f8f7, #d4f1f0); border-radius: 15px; margin-bottom: 20px;">
+                    <h3 style="color: #2a9d8f; margin: 10px 0;">🎉 Round Complete!</h3>
+                    <p style="font-size: 1.3rem; margin: 10px 0;">
+                        Score: <strong>${correctCount}</strong> / ${QUESTIONS_PER_ROUND}
+                    </p>
+                    <p style="color: #666;">
+                        ${correctCount === QUESTIONS_PER_ROUND ? 'Perfect score! 🌟' :
+                          correctCount >= 8 ? 'Great job! 👍' :
+                          correctCount >= 6 ? 'Good effort! Keep practicing! 💪' :
+                          'Keep trying! You\'ll get better! 📚'}
+                    </p>
+                    <p style="font-size: 1rem; color: #999; margin-top: 10px;">Click a color to review that question</p>
+                </div>
+            `;
+            reviewSummary.innerHTML = summaryHtml;
+
+            // 生成複習按鈕
+            questionHistory.forEach((question, index) => {
+                const button = document.createElement('button');
+                button.className = `review-btn ${question.isCorrect ? 'correct' : 'incorrect'}`;
+                button.textContent = index + 1;
+                button.title = question.isCorrect ? 'Correct' : 'Incorrect';
+                button.style.backgroundColor = question.hex;
+                button.style.color = getBrightness(question.hex) > 128 ? '#333' : 'white';
+                button.addEventListener('click', () => showQuestionDetail(index));
+                reviewButtons.appendChild(button);
+            });
+
+            // Scroll to review section
+            reviewContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showQuestionDetail(index) {
+            const question = questionHistory[index];
+
+            // 隱藏按鈕，顯示詳情
+            reviewButtons.style.display = 'none';
+            playAgainSection.style.display = 'none';
+            questionDetail.classList.add('show');
+
+            // 生成選項顯示
+            let optionsHtml = '<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0;">';
+            const allOptions = [question.correctAnswer];
+
+            // 重新生成錯誤選項
+            while (allOptions.length < 4) {
+                const randomIndex = Math.floor(Math.random() * colorData.length);
+                const incorrectColor = colorData[randomIndex].english;
+
+                if (!allOptions.includes(incorrectColor)) {
+                    allOptions.push(incorrectColor);
+                }
+            }
+
+            // 顯示所有選項
+            allOptions.forEach(option => {
+                const isOptionCorrect = option === question.correctAnswer;
+                const isSelected = option === question.selectedAnswer;
+                let optionClass = 'option';
+                let disabled = 'disabled';
+                let style = '';
+
+                if (isOptionCorrect) {
+                    optionClass += ' correct-answer';
+                    style = 'opacity: 1;';
+                } else if (isSelected) {
+                    optionClass += ' incorrect';
+                    style = 'opacity: 1;';
+                } else {
+                    style = 'opacity: 0.5;';
+                }
+
+                optionsHtml += `<button class="${optionClass}" ${disabled} style="${style}">${option}</button>`;
+            });
+            optionsHtml += '</div>';
+
+            const brightness = getBrightness(question.hex);
+
+            questionDetail.innerHTML = `
+                <h3 style="color: #ff6b6b; margin-bottom: 10px;">Question ${index + 1}</h3>
+                <p style="color: #666; margin-bottom: 15px;">
+                    ${question.isCorrect ? '✅ Correct' : '❌ Incorrect'}
+                </p>
+
+                <div class="question-detail-color" style="background-color: ${question.hex};">
+                    <div class="chinese-color" style="color: ${brightness > 128 ? '#333' : 'white'};">${question.chinese}</div>
+                </div>
+
+                ${optionsHtml}
+
+                <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 10px; text-align: left;">
+                    <p style="font-size: 1.1rem; margin: 8px 0; color: #666;">
+                        <strong>Chinese:</strong> ${question.chinese}
+                    </p>
+                    <p style="font-size: 1.1rem; margin: 8px 0; color: #666;">
+                        <strong>English:</strong> ${question.english}
+                    </p>
+                    <p style="font-size: 1.1rem; margin: 8px 0; color: #666;">
+                        <strong>Color:</strong> <span style="display: inline-block; width: 20px; height: 20px; background-color: ${question.hex}; border: 2px solid #333; border-radius: 50%; vertical-align: middle;"></span>
+                    </p>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: ${question.isCorrect ? '#e8f8f7' : '#ffe8e8'}; border-radius: 10px;">
+                    <p style="font-size: 1.1rem; margin: 5px 0;">
+                        <strong>Your answer:</strong> ${question.selectedAnswer}
+                    </p>
+                    ${!question.isCorrect ? `
+                        <p style="font-size: 1.1rem; margin: 5px 0; color: #ff6b6b;">
+                            <strong>Correct answer:</strong> ${question.correctAnswer}
+                        </p>
+                    ` : `
+                        <p style="font-size: 1.1rem; margin: 5px 0; color: #4ecdc4;">
+                            <strong>Well done!</strong> 🌟
+                        </p>
+                    `}
+                </div>
+
+                <div style="text-align: center;">
+                    <button class="back-to-buttons-btn" onclick="backToReviewButtons()">← Back to Review</button>
+                </div>
+            `;
+
+            // Scroll to detail
+            questionDetail.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function backToReviewButtons() {
+            questionDetail.classList.remove('show');
+            reviewButtons.style.display = 'grid';
+            playAgainSection.style.display = 'block';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>

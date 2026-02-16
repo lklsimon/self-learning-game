@@ -74,10 +74,6 @@
         .game-card:nth-child(4) .game-icon {
             animation-delay: 0.9s;
         }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
         .game-title {
             font-size: clamp(1.3rem, 4vw, 1.8rem);
             color: #333;
@@ -201,24 +197,23 @@
         <div class="game-card" onclick="openGame('number-review')">
             <span class="game-icon">🔢</span>
             <h2 class="game-title">Number Learning Game</h2>
-            <p class="game-description">Learn numbers from 1 to 100! Match Chinese characters with English words.</p>
+            <p class="game-description">Learn numbers from 1 to 100! Match Chinese characters with English words or Arabic numerals.</p>
             <button class="play-btn">▶ Play</button>
         </div>
 
-        <!-- Coming Soon Game 2 -->
-        <div class="game-card coming-soon">
-            <span class="coming-soon-badge">Coming Soon</span>
-            <span class="game-icon">🌈</span>
+        <!-- Color Learning Game -->
+        <div class="game-card" onclick="openGame('color-review')">
+            <span class="game-icon">🎨</span>
             <h2 class="game-title">Color Learning Game</h2>
             <p class="game-description">Learn colors in English! Match Chinese color names with their English translations.</p>
-            <button class="play-btn" disabled>🔒 Locked</button>
+            <button class="play-btn">▶ Play</button>
         </div>
     </div>
 
     <div class="footer">
         <div class="stats">
             <div class="stat-item">
-                <div class="stat-number">2</div>
+                <div class="stat-number">4</div>
                 <div class="stat-label">Available Games</div>
             </div>
             <div class="stat-item">
@@ -244,6 +239,9 @@
                     break;
                 case 'number-review':
                     window.location.href = 'number-review.html';
+                    break;
+                case 'color-review':
+                    window.location.href = 'color-review.html';
                     break;
                 default:
                     console.log('Game coming soon!');
