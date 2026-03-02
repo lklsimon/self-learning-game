@@ -74,6 +74,9 @@
         .game-card:nth-child(4) .game-icon {
             animation-delay: 0.9s;
         }
+        .game-card:nth-child(5) .game-icon {
+            animation-delay: 1.2s;
+        }
         .game-title {
             font-size: clamp(1.3rem, 4vw, 1.8rem);
             color: #333;
@@ -185,6 +188,14 @@
             <button class="play-btn">▶ Play</button>
         </div>
 
+        <!-- Clock Advanced Game -->
+        <div class="game-card" onclick="openGame('clock-advanced')">
+            <span class="game-icon">⚡</span>
+            <h2 class="game-title">Clock Advanced Game</h2>
+            <p class="game-description">Advanced time calculations! Calculate future time and time differences between clocks. Perfect for Grade 2 students.</p>
+            <button class="play-btn">▶ Play</button>
+        </div>
+
         <!-- Month Game -->
         <div class="game-card" onclick="openGame('month-review')">
             <span class="game-icon">📅</span>
@@ -213,7 +224,7 @@
     <div class="footer">
         <div class="stats">
             <div class="stat-item">
-                <div class="stat-number">4</div>
+                <div class="stat-number">5</div>
                 <div class="stat-label">Available Games</div>
             </div>
             <div class="stat-item">
@@ -233,6 +244,9 @@
             switch(gameType) {
                 case 'clock':
                     window.location.href = 'clock-game.html';
+                    break;
+                case 'clock-advanced':
+                    window.location.href = 'clock-advanced-game.html';
                     break;
                 case 'month-review':
                     window.location.href = 'month-review.html';
