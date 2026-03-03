@@ -77,6 +77,9 @@
         .game-card:nth-child(5) .game-icon {
             animation-delay: 1.2s;
         }
+        .game-card:nth-child(6) .game-icon {
+            animation-delay: 1.5s;
+        }
         .game-title {
             font-size: clamp(1.3rem, 4vw, 1.8rem);
             color: #333;
@@ -204,6 +207,14 @@
             <button class="play-btn">▶ Play</button>
         </div>
 
+        <!-- Calendar Learning Game -->
+        <div class="game-card" onclick="openGame('calendar')">
+            <span class="game-icon">📆</span>
+            <h2 class="game-title">Calendar Learning Game</h2>
+            <p class="game-description">Learn to use calendars! Find dates by week and calculate future dates. Perfect for Grade 2 students.</p>
+            <button class="play-btn">▶ Play</button>
+        </div>
+
         <!-- Number Learning Game -->
         <div class="game-card" onclick="openGame('number-review')">
             <span class="game-icon">🔢</span>
@@ -224,8 +235,8 @@
     <div class="footer">
         <div class="stats">
             <div class="stat-item">
-                <div class="stat-number">5</div>
-                <div class="stat-label">Available Games</div>
+            <div class="stat-number">6</div>
+            <div class="stat-label">Available Games</div>
             </div>
             <div class="stat-item">
                 <div class="stat-number">10</div>
@@ -256,6 +267,9 @@
                     break;
                 case 'color-review':
                     window.location.href = 'color-review.html';
+                    break;
+                case 'calendar':
+                    window.location.href = 'calendar-game.html';
                     break;
                 default:
                     console.log('Game coming soon!');
