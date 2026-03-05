@@ -148,6 +148,15 @@
             gap: 8px;
             flex-wrap: wrap;
         }
+        .advanced-mode-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 20px;
+            justify-content: center;
+            margin: 10px auto;
+            max-width: 900px;
+        }
         .input-text span {
             background: #f0f0f0;
             padding: 5px 12px;
@@ -642,6 +651,10 @@
                 font-size: 0.9rem;
                 padding: 8px;
             }
+            .advanced-mode-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
         }
 
         @media (max-width: 360px) {
@@ -671,47 +684,49 @@
     </div>
 
     <div id="advancedMode" style="display: none;">
-        <div class="clock-container" id="advancedClock">
-            <div class="clock-number" id="advancedClockNumbers"></div>
-            <div class="minute-ticks" id="advancedMinuteTicks"></div>
-            <div class="hand hour-hand" id="advancedHourHand"></div>
-            <div class="hand minute-hand" id="advancedMinuteHand"></div>
-            <div class="center-circle"></div>
-        </div>
-
-        <div class="format-indicator" id="formatIndicator">Digital Format</div>
-
-        <div class="input-container">
-            <div class="input-display">
-                <div class="input-text" id="inputDisplay">
-                    <span class="empty">0</span>
-                    <span class="empty">0</span>
-                    <span>:</span>
-                    <span class="empty">0</span>
-                    <span class="empty">0</span>
+        <div class="advanced-mode-wrapper">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div class="clock-container" id="advancedClock">
+                    <div class="clock-number" id="advancedClockNumbers"></div>
+                    <div class="minute-ticks" id="advancedMinuteTicks"></div>
+                    <div class="hand hour-hand" id="advancedHourHand"></div>
+                    <div class="hand minute-hand" id="advancedMinuteHand"></div>
+                    <div class="center-circle"></div>
                 </div>
-                <div id="textFormatInputs" style="display: none; margin-top: 15px;">
-                    <div class="past-to-selector">
-                        <button class="past-to-btn" id="pastBtn">past</button>
-                        <button class="past-to-btn" id="toBtn">to</button>
-                    </div>
-                </div>
+
+                <div class="format-indicator" id="formatIndicator">Digital Format</div>
             </div>
 
             <div class="numpad-container">
+                <div class="input-display" style="margin-bottom: 15px;">
+                    <div class="input-text" id="inputDisplay" style="flex-wrap: nowrap;">
+                        <span class="empty">0</span>
+                        <span class="empty">0</span>
+                        <span>:</span>
+                        <span class="empty">0</span>
+                        <span class="empty">0</span>
+                    </div>
+                    <div id="textFormatInputs" style="display: none; margin-top: 15px;">
+                        <div class="past-to-selector">
+                            <button class="past-to-btn" id="pastBtn">past</button>
+                            <button class="past-to-btn" id="toBtn">to</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="numpad">
                     <button class="num-btn" data-num="1">1</button>
-            <button class="num-btn" data-num="2">2</button>
-            <button class="num-btn" data-num="3">3</button>
-            <button class="num-btn clear" data-action="clear">C</button>
-            <button class="num-btn" data-num="4">4</button>
-            <button class="num-btn" data-num="5">5</button>
-            <button class="num-btn" data-num="6">6</button>
-            <button class="num-btn" data-num="0">0</button>
-            <button class="num-btn" data-num="7">7</button>
-            <button class="num-btn" data-num="8">8</button>
-            <button class="num-btn" data-num="9">9</button>
-            <button class="num-btn submit" data-action="submit">✓</button>
+                    <button class="num-btn" data-num="2">2</button>
+                    <button class="num-btn" data-num="3">3</button>
+                    <button class="num-btn clear" data-action="clear">C</button>
+                    <button class="num-btn" data-num="4">4</button>
+                    <button class="num-btn" data-num="5">5</button>
+                    <button class="num-btn" data-num="6">6</button>
+                    <button class="num-btn" data-num="0">0</button>
+                    <button class="num-btn" data-num="7">7</button>
+                    <button class="num-btn" data-num="8">8</button>
+                    <button class="num-btn" data-num="9">9</button>
+                    <button class="num-btn submit" data-action="submit">✓</button>
                 </div>
             </div>
         </div>
@@ -1018,6 +1033,8 @@
                     <span>${min2}</span>
                 `;
                 inputDisplay.innerHTML = html;
+                inputDisplay.style.flexWrap = 'nowrap';
+                inputDisplay.style.fontSize = 'clamp(1.8rem, 5vw, 2.5rem)';
             } else {
                 // Text format: XX minutes past/to XX
                 const min1 = userInput[0] !== undefined ? userInput[0] : '0';
@@ -1029,13 +1046,14 @@
                 const html = `
                     <span>${min1}</span>
                     <span>${min2}</span>
-                    <span class="no-bg"> minutes </span>
+                    <span class="no-bg">min</span>
                     <span>${pastToText}</span>
-                    <span> </span>
                     <span>${hour1}</span>
                     <span>${hour2}</span>
                 `;
                 inputDisplay.innerHTML = html;
+                inputDisplay.style.flexWrap = 'nowrap';
+                inputDisplay.style.fontSize = 'clamp(1.2rem, 3.5vw, 1.8rem)';
             }
         }
 
