@@ -20,7 +20,7 @@
         }
         .header {
             margin-bottom: 30px;
-        }
+        }，
         h1 {
             font-size: clamp(2rem, 6vw, 3.5rem);
             color: #fff;
@@ -79,6 +79,9 @@
         }
         .game-card:nth-child(6) .game-icon {
             animation-delay: 1.5s;
+        }
+        .game-card:nth-child(7) .game-icon {
+            animation-delay: 1.8s;
         }
         .game-title {
             font-size: clamp(1.3rem, 4vw, 1.8rem);
@@ -184,11 +187,14 @@
 
     <div class="games-grid">
         <!-- Clock Game -->
-        <div class="game-card" onclick="openGame('clock')">
+        <div class="game-card">
             <span class="game-icon">⏰</span>
             <h2 class="game-title">Time Learning Game</h2>
             <p class="game-description">Learn to tell time! Read the clock and choose the correct time. Practice with both digital and text formats.</p>
-            <button class="play-btn">▶ Play</button>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button class="play-btn" onclick="openGame('clock', 'beginner')">Beginner</button>
+                <button class="play-btn" style="background: linear-gradient(145deg, #ff6b6b, #e05555); box-shadow: 0 5px 0 #c74444;" onclick="openGame('clock', 'advanced')">Advanced</button>
+            </div>
         </div>
 
         <!-- Clock Advanced Game -->
@@ -223,6 +229,17 @@
             <button class="play-btn">▶ Play</button>
         </div>
 
+        <!-- Quick Calculation Game -->
+        <div class="game-card">
+            <span class="game-icon">🧮</span>
+            <h2 class="game-title">Quick Calculation Game</h2>
+            <p class="game-description">Test your math speed! Solve addition and subtraction problems within 10 seconds.</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button class="play-btn" onclick="openGame('quick-calculation', 'beginner')">Beginner</button>
+                <button class="play-btn" style="background: linear-gradient(145deg, #ff6b6b, #e05555); box-shadow: 0 5px 0 #c74444;" onclick="openGame('quick-calculation', 'advanced')">Advanced</button>
+            </div>
+        </div>
+
         <!-- Color Learning Game -->
         <div class="game-card" onclick="openGame('color-review')">
             <span class="game-icon">🎨</span>
@@ -235,7 +252,7 @@
     <div class="footer">
         <div class="stats">
             <div class="stat-item">
-            <div class="stat-number">6</div>
+            <div class="stat-number">7</div>
             <div class="stat-label">Available Games</div>
             </div>
             <div class="stat-item">
@@ -251,10 +268,14 @@
     </div>
 
     <script>
-        function openGame(gameType) {
+        function openGame(gameType, difficulty = null) {
             switch(gameType) {
                 case 'clock':
-                    window.location.href = 'clock-game.html';
+                    if (difficulty) {
+                        window.location.href = `clock-game.html?difficulty=${difficulty}`;
+                    } else {
+                        window.location.href = 'clock-game.html?difficulty=beginner';
+                    }
                     break;
                 case 'clock-advanced':
                     window.location.href = 'clock-advanced-game.html';
@@ -270,6 +291,11 @@
                     break;
                 case 'calendar':
                     window.location.href = 'calendar-game.html';
+                    break;
+                case 'quick-calculation':
+                    if (difficulty) {
+                        window.location.href = `quick-calculation-game.html?difficulty=${difficulty}`;
+                    }
                     break;
                 default:
                     console.log('Game coming soon!');

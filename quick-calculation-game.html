@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Calculation Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Comic Neue', cursive, Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 5px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            color: #ff6b6b;
+            text-shadow: 2px 2px 0 #ffd166;
+            margin: 5px 0 8px 0;
+            letter-spacing: 1px;
+            word-wrap: break-word;
+            flex-shrink: 0;
+        }
+        .difficulty-badge {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            color: white;
+            font-weight: bold;
+            padding: 6px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            display: inline-block;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        .difficulty-badge.beginner {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+        }
+        .difficulty-badge.advanced {
+            background: linear-gradient(145deg, #ff6b6b, #ff5252);
+        }
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            flex-shrink: 0;
+        }
+        .score-display {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            margin: 4px 8px;
+            padding: clamp(5px, 1.5vw, 8px) clamp(12px, 3vw, 15px);
+            background: linear-gradient(145deg, #ffd166, #ffc145);
+            border-radius: 15px;
+            display: inline-block;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #e0b14d;
+            flex-shrink: 0;
+        }
+        .progress-display {
+            font-size: clamp(0.85rem, 2.8vw, 1.1rem);
+            margin: 4px 8px;
+            padding: clamp(5px, 1.5vw, 8px) clamp(12px, 3vw, 15px);
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            border-radius: 15px;
+            display: inline-block;
+            color: #333;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #6bc5a3;
+            flex-shrink: 0;
+        }
+        .timer-display {
+            font-size: clamp(0.9rem, 3vw, 1.3rem);
+            margin: 4px 8px;
+            padding: clamp(5px, 1.5vw, 8px) clamp(12px, 3vw, 15px);
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            border-radius: 15px;
+            display: inline-block;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #e07a4f;
+            flex-shrink: 0;
+        }
+        .timer-display.warning {
+            background: linear-gradient(145deg, #ff6b6b, #e05555);
+            animation: pulse 0.5s infinite;
+        }
+        .question-box {
+            background: white;
+            padding: clamp(20px, 5vw, 30px);
+            border-radius: 20px;
+            margin: 15px auto;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        .question-text {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            color: #333;
+            font-weight: bold;
+            margin: 10px 0;
+            line-height: 1.2;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px auto;
+            max-width: 600px;
+            padding: 0 5px;
+            flex-shrink: 0;
+        }
+        .option {
+            padding: clamp(15px, 4vw, 20px) clamp(20px, 5vw, 30px);
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            color: #333;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            flex: 1 0 45%;
+            min-width: min(140px, 38vw);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #6bc5a3;
+        }
+        .option:hover:not(:disabled) {
+            background: linear-gradient(145deg, #8dd7b9, #7bc9a9);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #6bc5a3;
+        }
+        .option:disabled {
+            cursor: not-allowed;
+        }
+        .option.incorrect {
+            background: linear-gradient(145deg, #ff8ba0, #ff6b6b);
+            box-shadow: 0 4px 0 #e05555;
+        }
+        .option.correct-answer {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            box-shadow: 0 0 15px #4ecdc4;
+            animation: pulse 1s infinite;
+        }
+        .feedback {
+            font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+            margin: 8px;
+            min-height: 35px;
+            font-weight: bold;
+            padding: 0 10px;
+            flex-shrink: 0;
+        }
+        .correct {
+            color: #4ecdc4;
+            text-shadow: 1px 1px 0 #2a9d8f;
+        }
+        .incorrect {
+            color: #ff6b6b;
+            text-shadow: 1px 1px 0 #e63946;
+        }
+        .timeout {
+            color: #ff9a76;
+            text-shadow: 1px 1px 0 #e07a4f;
+        }
+        .review-container {
+            display: none;
+            margin: 15px auto;
+            max-width: 95vw;
+            background: white;
+            padding: clamp(15px, 4vw, 20px);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .review-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: clamp(8px, 2vw, 10px);
+            margin: 15px 0;
+            padding: clamp(15px, 4vw, 20px);
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .review-btn {
+            padding: clamp(10px, 3vw, 15px);
+            background: linear-gradient(145deg, #a8e6cf, #8dd7b9);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: bold;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 0 #6bc5a3;
+        }
+        .review-btn:hover {
+            background: linear-gradient(145deg, #8dd7b9, #7bc9a9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 #6bc5a3;
+        }
+        .review-btn.correct {
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            box-shadow: 0 3px 0 #2a9d8f;
+        }
+        .review-btn.correct:hover {
+            background: linear-gradient(145deg, #36b7ae, #2a9d8f);
+            box-shadow: 0 5px 0 #2a9d8f;
+        }
+        .review-btn.incorrect {
+            background: linear-gradient(145deg, #ff8ba0, #ff6b6b);
+            box-shadow: 0 3px 0 #e05555;
+        }
+        .review-btn.timeout {
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            box-shadow: 0 3px 0 #e07a4f;
+        }
+        .review-btn.incorrect:hover {
+            background: linear-gradient(145deg, #ff6b6b, #e05555);
+            box-shadow: 0 5px 0 #e05555;
+        }
+        .question-detail {
+            display: none;
+            margin-top: 15px;
+            padding: clamp(15px, 4vw, 20px);
+            background: linear-gradient(145deg, #fff9e6, #fff5cc);
+            border-radius: 15px;
+            border: 3px solid #ffd166;
+        }
+        .question-detail.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
+                transform: translateY(-1px);
+            }
+            50% {
+                box-shadow: 0 0 20px #4ecdc4, 0 6px 0 #36b7ae;
+                transform: translateY(-3px);
+            }
+            100% {
+                box-shadow: 0 0 5px #4ecdc4, 0 4px 0 #36b7ae;
+                transform: translateY(-1px);
+            }
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .btn {
+            padding: clamp(15px, 4vw, 20px) clamp(30px, 8vw, 45px);
+            background: linear-gradient(145deg, #4ecdc4, #36b7ae);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 0 #2a9d8f;
+        }
+        .btn:hover {
+            background: linear-gradient(145deg, #36b7ae, #2a9d8f);
+            box-shadow: 0 8px 0 #2a9d8f;
+            transform: translateY(-3px);
+        }
+        .btn-home {
+            background: linear-gradient(145deg, #ff9a76, #ff8a61);
+            box-shadow: 0 5px 0 #e07a4f;
+        }
+        .btn-home:hover {
+            background: linear-gradient(145deg, #ff8a61, #ff7a4c);
+            box-shadow: 0 8px 0 #e07a4f;
+        }
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 10px auto;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #36b7ae);
+            transition: width 0.1s linear;
+        }
+        .progress-fill.warning {
+            background: linear-gradient(90deg, #ff9a76, #ff6b6b);
+        }
+    </style>
+</head>
+<body>
+    <h1>🧮 Quick Calculation Game</h1>
+    <div class="stats-container">
+        <div class="difficulty-badge" id="difficultyBadge">Beginner</div>
+        <div class="score-display">Score: <span id="score">0</span></div>
+        <div class="progress-display">Question: <span id="currentQuestion">1</span>/10</div>
+        <div class="timer-display" id="timerDisplay">10s</div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div id="gameArea">
+        <div class="question-box">
+            <div class="question-text" id="questionText"></div>
+        </div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="review-container" id="reviewContainer">
+        <h2 style="color: #ff6b6b; margin-bottom: 20px;">📊 Review Your Answers</h2>
+        <div id="reviewSummary"></div>
+        <div id="reviewButtons" class="review-buttons"></div>
+        <div id="questionDetail" class="question-detail"></div>
+        <div id="playAgainSection" style="display: none; text-align: center;">
+            <button class="btn" id="playAgainBtn" style="margin-right: 10px;">🎮 Play Again</button>
+            <button class="btn btn-home" id="homeBtn">🏠 Home</button>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const difficulty = urlParams.get('difficulty') || 'beginner';
+
+        let currentQuestion = {};
+        let correctAnswer = 0;
+        let score = 0;
+        let timer = null;
+        let timeRemaining = 10;
+        let questionHistory = [];
+        let usedQuestions = new Set();
+        let currentQuestionNum = 1;
+        const QUESTIONS_PER_ROUND = 10;
+        const TIME_PER_QUESTION = 10;
+
+        const difficultyBadge = document.getElementById('difficultyBadge');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('options');
+        const feedbackElement = document.getElementById('feedback');
+        const scoreElement = document.getElementById('score');
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const progressFill = document.getElementById('progressFill');
+        const gameArea = document.getElementById('gameArea');
+        const reviewContainer = document.getElementById('reviewContainer');
+        const reviewSummary = document.getElementById('reviewSummary');
+        const reviewButtons = document.getElementById('reviewButtons');
+        const questionDetail = document.getElementById('questionDetail');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const playAgainSection = document.getElementById('playAgainSection');
+
+        // Set difficulty badge
+        difficultyBadge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+        difficultyBadge.className = `difficulty-badge ${difficulty}`;
+
+        startNewRound();
+
+        playAgainBtn.addEventListener('click', startNewRound);
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        function startNewRound() {
+            score = 0;
+            currentQuestionNum = 1;
+            questionHistory = [];
+            usedQuestions = new Set();
+
+            scoreElement.textContent = score;
+            currentQuestionElement.textContent = currentQuestionNum;
+
+            gameArea.style.display = 'block';
+            reviewContainer.style.display = 'none';
+            playAgainSection.style.display = 'none';
+
+            generateNewQuestion();
+        }
+
+        function generateNewQuestion() {
+            if (currentQuestionNum > QUESTIONS_PER_ROUND) {
+                showReview();
+                return;
+            }
+
+            currentQuestionElement.textContent = currentQuestionNum;
+
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'feedback';
+
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('correct-answer', 'incorrect');
+                if (option.disabled) {
+                    option.disabled = false;
+                    option.style.background = 'linear-gradient(145deg, #a8e6cf, #8dd7b9)';
+                    option.style.boxShadow = '0 4px 0 #6bc5a3';
+                }
+            });
+
+            generateQuestion();
+            startTimer();
+        }
+
+        function generateQuestion() {
+            let num1, num2, isAddition, questionKey;
+            let attempts = 0;
+            const maxAttempts = 100;
+
+            do {
+                isAddition = Math.random() < 0.5;
+
+                if (difficulty === 'beginner') {
+                    // Single digit (0-9)
+                    num1 = Math.floor(Math.random() * 10);
+                    num2 = Math.floor(Math.random() * 10);
+
+                    if (isAddition) {
+                        correctAnswer = num1 + num2;
+                        currentQuestion = {
+                            text: `${num1} + ${num2} = ?`,
+                            num1: num1,
+                            num2: num2,
+                            operation: '+'
+                        };
+                    } else {
+                        // Ensure no negative results by making num1 >= num2
+                        if (num1 < num2) {
+                            [num1, num2] = [num2, num1];
+                        }
+                        correctAnswer = num1 - num2;
+                        currentQuestion = {
+                            text: `${num1} - ${num2} = ?`,
+                            num1: num1,
+                            num2: num2,
+                            operation: '-'
+                        };
+                    }
+                } else {
+                    // Double digit (10-99)
+                    num1 = Math.floor(Math.random() * 90) + 10;
+                    num2 = Math.floor(Math.random() * 90) + 10;
+
+                    if (isAddition) {
+                        correctAnswer = num1 + num2;
+                        currentQuestion = {
+                            text: `${num1} + ${num2} = ?`,
+                            num1: num1,
+                            num2: num2,
+                            operation: '+'
+                        };
+                    } else {
+                        // Ensure no negative results by making num1 >= num2
+                        if (num1 < num2) {
+                            [num1, num2] = [num2, num1];
+                        }
+                        correctAnswer = num1 - num2;
+                        currentQuestion = {
+                            text: `${num1} - ${num2} = ?`,
+                            num1: num1,
+                            num2: num2,
+                            operation: '-'
+                        };
+                    }
+                }
+
+                // Create a unique key for this question
+                questionKey = `${num1}${currentQuestion.operation}${num2}`;
+                attempts++;
+            } while (usedQuestions.has(questionKey) && attempts < maxAttempts);
+
+            usedQuestions.add(questionKey);
+
+            questionText.textContent = currentQuestion.text;
+            generateOptions(correctAnswer);
+        }
+
+        function generateOptions(correct) {
+            optionsContainer.innerHTML = '';
+            const options = [correct];
+
+            while (options.length < 4) {
+                let wrongAnswer;
+                const strategy = Math.floor(Math.random() * 4);
+
+                switch (strategy) {
+                    case 0:
+                        wrongAnswer = correct + Math.floor(Math.random() * 5) + 1;
+                        break;
+                    case 1:
+                        wrongAnswer = correct - Math.floor(Math.random() * 5) - 1;
+                        break;
+                    case 2:
+                        wrongAnswer = correct + (Math.random() < 0.5 ? 10 : -10);
+                        break;
+                    case 3:
+                        wrongAnswer = correct + (Math.random() < 0.5 ? Math.floor(Math.random() * 3) + 1 : -Math.floor(Math.random() * 3) - 1);
+                        break;
+                }
+
+                // Ensure non-negative answers
+                if (wrongAnswer >= 0 && !options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+
+            shuffleArray(options);
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function startTimer() {
+            timeRemaining = TIME_PER_QUESTION;
+            updateTimerDisplay();
+
+            timer = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    timer = null;
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = `${timeRemaining}s`;
+            const percentage = (timeRemaining / TIME_PER_QUESTION) * 100;
+            progressFill.style.width = `${percentage}%`;
+
+            if (timeRemaining <= 3) {
+                timerDisplay.classList.add('warning');
+                progressFill.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+                progressFill.classList.remove('warning');
+            }
+        }
+
+        function handleTimeout() {
+            clearInterval(timer);
+            timer = null;
+
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.disabled = true;
+                if (parseInt(option.textContent) === correctAnswer) {
+                    option.classList.add('correct-answer');
+                }
+            });
+
+            questionHistory.push({
+                questionText: currentQuestion.text,
+                correctAnswer: correctAnswer,
+                selectedAnswer: 'Timeout',
+                isCorrect: false,
+                isTimeout: true,
+                difficulty: difficulty
+            });
+
+            feedbackElement.textContent = '⏰ Time\'s up!';
+            feedbackElement.className = 'feedback timeout';
+
+            setTimeout(() => {
+                currentQuestionNum++;
+                generateNewQuestion();
+            }, 2000);
+        }
+
+        function checkAnswer(selectedAnswer) {
+            clearInterval(timer);
+            timer = null;
+
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.disabled = true;
+            });
+
+            const isCorrect = selectedAnswer === correctAnswer;
+
+            questionHistory.push({
+                questionText: currentQuestion.text,
+                correctAnswer: correctAnswer,
+                selectedAnswer: selectedAnswer,
+                isCorrect: isCorrect,
+                isTimeout: false,
+                difficulty: difficulty
+            });
+
+            if (isCorrect) {
+                feedbackElement.textContent = 'Correct! Well done! ✨';
+                feedbackElement.className = 'feedback correct';
+                score++;
+                scoreElement.textContent = score;
+
+                options.forEach(option => {
+                    if (parseInt(option.textContent) === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    }
+                });
+            } else {
+                feedbackElement.textContent = `Incorrect. The correct answer is: ${correctAnswer}`;
+                feedbackElement.className = 'feedback incorrect';
+
+                options.forEach(option => {
+                    if (parseInt(option.textContent) === correctAnswer) {
+                        option.classList.add('correct-answer');
+                    } else if (parseInt(option.textContent) === selectedAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                });
+            }
+
+            setTimeout(() => {
+                currentQuestionNum++;
+                generateNewQuestion();
+            }, 2000);
+        }
+
+        function showReview() {
+            gameArea.style.display = 'none';
+            feedbackElement.textContent = '';
+
+            reviewContainer.style.display = 'block';
+            playAgainSection.style.display = 'block';
+            questionDetail.classList.remove('show');
+
+            reviewSummary.innerHTML = '';
+            reviewButtons.innerHTML = '';
+
+            const correctCount = questionHistory.filter(q => q.isCorrect).length;
+            const timeoutCount = questionHistory.filter(q => q.isTimeout).length;
+
+            const summaryHtml = `
+                <div style="text-align: center; padding: 20px; background: linear-gradient(145deg, #fff9e6, #fff5cc); border-radius: 15px; margin-bottom: 20px;">
+                    <h3 style="color: #2a9d8f; margin: 10px 0;">🎉 Round Complete!</h3>
+                    <p style="font-size: 1.3rem; margin: 10px 0;">
+                        Score: <strong>${correctCount}</strong> / ${QUESTIONS_PER_ROUND}
+                    </p>
+                    <p style="font-size: 1.1rem; margin: 5px 0; color: #ff9a76;">
+                        Timeouts: <strong>${timeoutCount}</strong>
+                    </p>
+                    <p style="color: #666; margin-top: 10px;">
+                        ${correctCount === QUESTIONS_PER_ROUND ? 'Perfect score! 🌟' :
+                          correctCount >= 8 ? 'Great job! 👍' :
+                          correctCount >= 6 ? 'Good effort! Keep practicing! 💪' :
+                          'Keep trying! You\'ll get better! 📚'}
+                    </p>
+                    <p style="font-size: 1rem; color: #999; margin-top: 10px;">Click a number to review that question</p>
+                </div>
+            `;
+            reviewSummary.innerHTML = summaryHtml;
+
+            questionHistory.forEach((question, index) => {
+                const button = document.createElement('button');
+                let icon;
+                if (question.isTimeout) {
+                    icon = '⏰';
+                } else {
+                    icon = question.isCorrect ? '✅' : '❌';
+                }
+
+                let btnClass;
+                if (question.isTimeout) {
+                    btnClass = 'timeout';
+                } else {
+                    btnClass = question.isCorrect ? 'correct' : 'incorrect';
+                }
+
+                button.className = `review-btn ${btnClass}`;
+                button.textContent = `${icon} ${index + 1}`;
+                button.title = question.isTimeout ? 'Timeout' : (question.isCorrect ? 'Correct' : 'Incorrect');
+                button.addEventListener('click', () => showQuestionDetail(index));
+                reviewButtons.appendChild(button);
+            });
+
+            reviewContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showQuestionDetail(index) {
+            const question = questionHistory[index];
+
+            reviewButtons.style.display = 'none';
+            playAgainSection.style.display = 'none';
+            questionDetail.classList.add('show');
+
+            const icon = question.isTimeout ? '⏰' : (question.isCorrect ? '✅' : '❌');
+            const status = question.isTimeout ? 'Timeout' : (question.isCorrect ? 'Correct' : 'Incorrect');
+
+            questionDetail.innerHTML = `
+                <h3 style="color: #ff6b6b; margin-bottom: 10px;">Question ${index + 1} - ${icon}</h3>
+                <p style="color: #666; margin-bottom: 15px;">
+                    ${question.isTimeout ? '⏰ Time ran out!' : (question.isCorrect ? '✅ Correct' : '❌ Incorrect')}
+                </p>
+
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <p style="font-size: 1.8rem; margin: 10px 0; color: #333; font-weight: bold;">
+                        ${question.questionText}
+                    </p>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: ${question.isCorrect ? '#e8f8f7' : (question.isTimeout ? '#fff3e0' : '#ffe8e8')}; border-radius: 10px;">
+                    <p style="font-size: 1.1rem; margin: 5px 0;">
+                        <strong>Correct answer:</strong> ${question.correctAnswer}
+                    </p>
+                    ${!question.isTimeout ? `
+                        <p style="font-size: 1.1rem; margin: 5px 0;">
+                            <strong>Your answer:</strong> ${question.selectedAnswer}
+                        </p>
+                    ` : ''}
+                </div>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn btn-home" onclick="backToReviewButtons()">← Back to Review</button>
+                </div>
+            `;
+
+            questionDetail.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function backToReviewButtons() {
+            questionDetail.classList.remove('show');
+            reviewButtons.style.display = 'grid';
+            playAgainSection.style.display = 'block';
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>
